@@ -1,0 +1,176 @@
+STRUCTURE PORTFOLIO
+Navbar
+Hero section
+À propos
+Formation
+Expériences
+Compétences
+Projets
+Contact
+Footer
+J’ai regardé ton énoncé.
+Et franchement ton prof veut surtout vérifier 4 choses :
+
+Que tu comprends un minimum Tailwind
+Que ton site est propre et responsive
+Que tu utilises Git/GitHub sérieusement
+Que tu sais déployer un projet
+
+Et vu ton niveau actuel, le meilleur plan c’est qu’on fasse un portfolio simple, moderne, propre et facile à modifier plus tard. Pas un truc ultra compliqué.
+
+Le portfolio sera basé sur TON vrai profil :
+
+étudiant
+chauffeur VTC
+fondateur de “For Everybody”
+passion informatique/digital
+
+Comme ça ton projet sera crédible et personnel.
+
+Ce qu’on va faire ensemble
+Structure du projet
+
+Ton portfolio aura :
+
+Navbar
+Hero section
+À propos
+Formation
+Expériences
+Compétences
+Projets
+Contact
+Footer
+
+Exactement comme demandé dans l’énoncé.
+
+Ce que TU vas apprendre
+
+Je vais t’expliquer :
+
+Tailwind de façon ultra simple
+comment modifier les couleurs
+comment changer les textes
+comment ajouter des sections
+comment faire des commits Git intelligents
+comment mettre sur GitHub
+comment déployer sur Vercel
+
+Donc même après le projet tu pourras modifier seul.
+
+Le style qu’on va faire
+
+Je te conseille :
+
+fond noir/gris foncé
+texte blanc
+couleur principale bleu ou violet
+design moderne
+animations légères
+
+Parce que :
+
+c’est propre
+facile en Tailwind
+très apprécié par les profs frontend
+IMPORTANT POUR LES COMMITS GIT
+
+Ton prof va regarder les commits.
+
+Donc on ne doit PAS faire :
+
+first commit
+final commit
+
+On doit faire beaucoup de petits commits propres.
+
+Exemple :
+
+Initialisation du projet
+Ajout de la navbar
+Création de la section hero
+Ajout du responsive mobile
+Ajout des animations Tailwind
+Création section compétences
+Ajout footer
+Correction du design mobile
+Déploiement Vercel
+
+Ça donne l’impression d’un vrai travail sérieux.
+
+Ce qu’on va utiliser
+
+Le plus simple pour toi :
+
+VS Code
+Tailwind via CDN
+HTML simple
+un peu de JavaScript si besoin
+
+Comme ça :
+
+moins compliqué
+rapide
+facile à comprendre
+PLAN QU’ON VA SUIVRE
+Étape 1
+
+Installer :
+
+VS Code
+Git
+GitHub Desktop (plus simple pour toi)
+Étape 2
+
+Créer :
+
+index.html
+dossier images
+Étape 3
+
+Ajouter Tailwind
+
+Étape 4
+
+Créer les sections une par une
+
+Étape 5
+
+Responsive mobile
+
+Étape 6
+
+Push GitHub
+
+Étape 7
+
+Déploiement Vercel
+
+COMMENT TAILWIND FONCTIONNE (ultra simple)
+
+Exemple :
+
+<h1 class="text-4xl font-bold text-blue-500">
+Bonjour
+</h1>
+
+Ça veut dire :
+
+text-4xl → gros texte
+font-bold → gras
+text-blue-500 → texte bleu
+
+Tailwind = on ajoute directement les styles dans class=""
+
+Ce que je te conseille maintenant
+
+Envoie-moi :
+
+une capture de ton VS Code installé
+OU
+dis-moi si :
+VS Code est installé
+Git est installé
+GitHub est créé
+
+Et ensuite on commence directement le projet étape par étape ensemble.

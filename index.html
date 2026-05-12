@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Oumar NGOM – Portfolio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Syne', sans-serif; background-color: #0a0a0a; color: #f0ede8; }
+    code, .mono { font-family: 'Space Mono', monospace; }
+
+    /* ── Cursor glow ── */
+    .cursor-glow {
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(255,165,0,0.12) 0%, transparent 70%);
+      border-radius: 50%;
+      position: fixed; pointer-events: none; transform: translate(-50%,-50%);
+      z-index: 0; transition: opacity 0.3s;
+    }
+
+    /* ── Noise texture overlay ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 1; opacity: 0.4;
+    }
+
+    /* ── Accent color ── */
+    .accent { color: #f97316; }
+    .accent-bg { background-color: #f97316; }
+    .accent-border { border-color: #f97316; }
+
+    /* ── Animated underline ── */
+    .underline-anim {
+      position: relative; display: inline-block;
+    }
+    .underline-anim::after {
+      content: ''; position: absolute; bottom: -2px; left: 0;
+      width: 0; height: 2px; background: #f97316;
+      transition: width 0.35s ease;
+    }
+    .underline-anim:hover::after { width: 100%; }
+
+    /* ── Section fade-in on scroll ── */
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── Skill bar ── */
+    .skill-bar-fill { height: 4px; border-radius: 2px; background: #f97316; width: 0; transition: width 1.2s ease; }
+
+    /* ── Card hover ── */
+    .card-hover {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 40px rgba(249,115,22,0.15);
+    }
+
+    /* ── Nav active ── */
+    nav a.active { color: #f97316; }
+
+    /* ── Hero glitch title ── */
+    @keyframes glitch {
+      0%,100% { clip-path: inset(0 0 100% 0); }
+      10% { clip-path: inset(10% 0 70% 0); transform: translate(-3px); }
+      20% { clip-path: inset(50% 0 20% 0); transform: translate(3px); }
+      30% { clip-path: inset(30% 0 50% 0); transform: translate(0); }
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: #0a0a0a; }
+    ::-webkit-scrollbar-thumb { background: #f97316; border-radius: 2px; }
+
+    /* ── Mobile menu ── */
+    #mobile-menu { transition: max-height 0.4s ease, opacity 0.4s ease; max-height: 0; opacity: 0; overflow: hidden; }
+    #mobile-menu.open { max-height: 400px; opacity: 1; }
+  </style>
+</head>
+<body class="relative overflow-x-hidden">
+
+  <!-- Cursor glow -->
+  <div class="cursor-glow" id="glow"></div>
+
+  <!-- ═══════════════════════════════════════════
+       HEADER / NAVIGATION
+  ═══════════════════════════════════════════ -->
+  <header id="header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+    <div class="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
+      <!-- Logo -->
+      <a href="#hero" class="mono text-xl font-bold tracking-tight">
+        <span class="accent">&lt;</span>Omar<span class="accent">/&gt;</span>
+      </a>
+
+      <!-- Desktop nav -->
+      <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400">
+        <a href="#about" class="underline-anim hover:text-white transition-colors">À propos</a>
+        <a href="#formation" class="underline-anim hover:text-white transition-colors">Formation</a>
+        <a href="#experience" class="underline-anim hover:text-white transition-colors">Expérience</a>
+        <a href="#skills" class="underline-anim hover:text-white transition-colors">Compétences</a>
+        <a href="#projects" class="underline-anim hover:text-white transition-colors">Projets</a>
+        <a href="#contact" class="accent-bg text-white text-xs px-4 py-2 rounded-full font-semibold hover:opacity-80 transition-opacity">Contact</a>
+      </nav>
+
+      <!-- Burger menu (mobile) -->
+      <button id="burger" class="md:hidden flex flex-col gap-1.5 p-2" aria-label="Menu">
+        <span class="block w-6 h-0.5 bg-white transition-all duration-300" id="b1"></span>
+        <span class="block w-6 h-0.5 bg-white transition-all duration-300" id="b2"></span>
+        <span class="block w-6 h-0.5 bg-white transition-all duration-300" id="b3"></span>
+      </button>
+    </div>
+
+    <!-- Mobile menu -->
+    <div id="mobile-menu" class="md:hidden bg-[#111] border-t border-white/10">
+      <nav class="flex flex-col px-6 py-4 gap-4 text-sm font-medium text-gray-300">
+        <a href="#about" class="mobile-link hover:text-white transition-colors">À propos</a>
+        <a href="#formation" class="mobile-link hover:text-white transition-colors">Formation</a>
+        <a href="#experience" class="mobile-link hover:text-white transition-colors">Expérience</a>
+        <a href="#skills" class="mobile-link hover:text-white transition-colors">Compétences</a>
+        <a href="#projects" class="mobile-link hover:text-white transition-colors">Projets</a>
+        <a href="#contact" class="mobile-link hover:text-orange-400 transition-colors">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════
+       HERO
+  ═══════════════════════════════════════════ -->
+  <section id="hero" class="relative min-h-screen flex items-center justify-center px-6 overflow-hidden">
+
+    <!-- Background grid -->
+    <div class="absolute inset-0 opacity-5"
+      style="background-image: linear-gradient(#f97316 1px, transparent 1px), linear-gradient(90deg, #f97316 1px, transparent 1px);
+             background-size: 60px 60px;">
+    </div>
+
+    <!-- Blob -->
+    <div class="absolute top-1/3 left-1/4 w-72 h-72 rounded-full bg-orange-500/10 blur-3xl pointer-events-none"></div>
+    <div class="absolute bottom-1/4 right-1/4 w-60 h-60 rounded-full bg-orange-400/5 blur-3xl pointer-events-none"></div>
+
+    <div class="relative z-10 max-w-4xl mx-auto text-center">
+      <p class="mono text-orange-400 text-sm tracking-widest mb-6 animate-pulse">// Bonjour, je suis</p>
+
+      <h1 class="text-6xl md:text-8xl font-extrabold tracking-tight mb-4 leading-none">
+        Omar<br><span class="accent">Diallo</span>
+      </h1>
+
+      <p class="text-xl md:text-2xl text-gray-400 font-medium mt-6 mb-10">
+        Étudiant en <span class="text-white font-semibold">Informatique</span> &nbsp;·&nbsp;
+        Développeur <span class="text-white font-semibold">Frontend</span> &nbsp;·&nbsp;
+        Entrepreneur
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="#projects"
+           class="accent-bg text-white px-8 py-4 rounded-full font-bold text-sm tracking-wide hover:scale-105 transition-transform shadow-lg shadow-orange-500/20">
+          Voir mes projets →
+        </a>
+        <a href="#contact"
+           class="border border-white/20 text-white px-8 py-4 rounded-full font-bold text-sm tracking-wide hover:border-orange-500 hover:text-orange-400 transition-colors">
+          Me contacter
+        </a>
+      </div>
+
+      <!-- Scroll indicator -->
+      <div class="mt-20 flex flex-col items-center gap-2 text-gray-600 text-xs mono">
+        <span>scroll</span>
+        <div class="w-px h-12 bg-gradient-to-b from-orange-500 to-transparent animate-pulse"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       À PROPOS
+  ═══════════════════════════════════════════ -->
+  <section id="about" class="py-24 px-6 relative z-10">
+    <div class="max-w-6xl mx-auto">
+
+      <div class="reveal grid md:grid-cols-2 gap-16 items-center">
+        <!-- Photo placeholder -->
+        <div class="relative">
+          <div class="w-full aspect-square max-w-sm mx-auto rounded-2xl bg-[#151515] border border-white/10 overflow-hidden flex items-center justify-center">
+            <div class="text-center">
+              <div class="text-8xl mb-4">👤</div>
+              <p class="mono text-xs text-gray-600">photo.jpg</p>
+            </div>
+          </div>
+          <!-- Decorative elements -->
+          <div class="absolute -top-4 -right-4 w-24 h-24 border-2 accent-border rounded-2xl opacity-30"></div>
+          <div class="absolute -bottom-4 -left-4 w-16 h-16 accent-bg rounded-xl opacity-20"></div>
+        </div>
+
+        <!-- Text -->
+        <div>
+          <p class="mono text-orange-400 text-sm tracking-widest mb-3">01. // À propos</p>
+          <h2 class="text-4xl md:text-5xl font-extrabold mb-6 leading-tight">
+            Qui suis-<span class="accent">je</span> ?
+          </h2>
+          <p class="text-gray-400 text-lg leading-relaxed mb-4">
+            Je suis <strong class="text-white">Omar Diallo</strong>, étudiant en 2ème année d'informatique au Sénégal.
+            Passionné par le développement web, je construis des interfaces modernes et fonctionnelles.
+          </p>
+          <p class="text-gray-400 text-lg leading-relaxed mb-8">
+            En parallèle de mes études, je travaille comme chauffeur VTC Yango et je documente cette aventure unique
+            d'étudiant-entrepreneur sur TikTok sous le concept <span class="text-orange-400 font-semibold">"l'étudiant chauffeur VTC"</span>.
+          </p>
+
+          <div class="flex flex-wrap gap-3">
+            <span class="bg-white/5 border border-white/10 px-4 py-2 rounded-full text-sm text-gray-300">📍 Sénégal</span>
+            <span class="bg-white/5 border border-white/10 px-4 py-2 rounded-full text-sm text-gray-300">🎓 Bac+2 Informatique</span>
+            <span class="bg-white/5 border border-white/10 px-4 py-2 rounded-full text-sm text-gray-300">🚗 Chauffeur VTC</span>
+            <span class="bg-white/5 border border-white/10 px-4 py-2 rounded-full text-sm text-gray-300">💻 Open to work</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       FORMATION
+  ═══════════════════════════════════════════ -->
+  <section id="formation" class="py-24 px-6 bg-[#0d0d0d] relative z-10">
+    <div class="max-w-4xl mx-auto">
+
+      <div class="reveal text-center mb-16">
+        <p class="mono text-orange-400 text-sm tracking-widest mb-3">02. // Formation</p>
+        <h2 class="text-4xl md:text-5xl font-extrabold">Mon parcours <span class="accent">académique</span></h2>
+      </div>
+
+      <!-- Timeline -->
+      <div class="relative">
+        <!-- Line -->
+        <div class="absolute left-6 md:left-1/2 top-0 bottom-0 w-px bg-white/10 md:-translate-x-1/2"></div>
+
+        <!-- Item 1 -->
+        <div class="reveal relative flex md:justify-end mb-12 md:pr-12 pl-16 md:pl-0 md:w-1/2">
+          <div class="absolute left-4 md:left-auto md:right-0 md:translate-x-1/2 top-4 w-4 h-4 rounded-full accent-bg border-4 border-[#0d0d0d] z-10 md:mr-[-8px]"></div>
+          <div class="bg-[#151515] border border-white/10 rounded-2xl p-6 card-hover max-w-sm w-full">
+            <p class="mono text-orange-400 text-xs mb-2">2024 – En cours</p>
+            <h3 class="font-bold text-lg mb-1">Licence en Informatique</h3>
+            <p class="text-gray-500 text-sm mb-3">UNIPRO – Formation en alternance</p>
+            <p class="text-gray-400 text-sm">Développement web frontend & backend, algorithmique, bases de données, réseaux, génie logiciel.</p>
+          </div>
+        </div>
+
+        <!-- Item 2 (right) -->
+        <div class="reveal relative flex md:justify-start mb-12 md:pl-12 pl-16 md:ml-auto md:w-1/2">
+          <div class="absolute left-4 md:left-0 md:-translate-x-1/2 top-4 w-4 h-4 rounded-full bg-gray-600 border-4 border-[#0d0d0d] z-10"></div>
+          <div class="bg-[#151515] border border-white/10 rounded-2xl p-6 card-hover max-w-sm w-full">
+            <p class="mono text-gray-500 text-xs mb-2">2023 – 2024</p>
+            <h3 class="font-bold text-lg mb-1">Baccalauréat série S</h3>
+            <p class="text-gray-500 text-sm mb-3">Lycée – Sénégal</p>
+            <p class="text-gray-400 text-sm">Obtention du baccalauréat scientifique avec mention, spécialité mathématiques et sciences physiques.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       EXPÉRIENCES
+  ═══════════════════════════════════════════ -->
+  <section id="experience" class="py-24 px-6 relative z-10">
+    <div class="max-w-4xl mx-auto">
+
+      <div class="reveal text-center mb-16">
+        <p class="mono text-orange-400 text-sm tracking-widest mb-3">03. // Expériences</p>
+        <h2 class="text-4xl md:text-5xl font-extrabold">Ce que j'ai <span class="accent">vécu</span></h2>
+      </div>
+
+      <div class="space-y-6">
+
+        <!-- Exp 1 -->
+        <div class="reveal bg-[#111] border border-white/10 rounded-2xl p-8 card-hover">
+          <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
+            <div>
+              <h3 class="font-bold text-xl mb-1">Chauffeur VTC – Yango Pro</h3>
+              <p class="text-orange-400 text-sm font-medium">Travailleur indépendant · Dakar, Sénégal</p>
+            </div>
+            <span class="mono text-gray-500 text-xs whitespace-nowrap bg-white/5 px-3 py-1.5 rounded-full">2023 – Présent</span>
+          </div>
+          <ul class="text-gray-400 text-sm space-y-2">
+            <li class="flex gap-2"><span class="text-orange-500 mt-1">▹</span> Gestion autonome de l'activité de transport de personnes</li>
+            <li class="flex gap-2"><span class="text-orange-500 mt-1">▹</span> Optimisation des revenus et gestion des finances personnelles</li>
+            <li class="flex gap-2"><span class="text-orange-500 mt-1">▹</span> Création de contenu TikTok documentant l'expérience étudiant-chauffeur</li>
+            <li class="flex gap-2"><span class="text-orange-500 mt-1">▹</span> Développement des soft skills : communication, ponctualité, gestion du stress</li>
+          </ul>
+        </div>
+
+        <!-- Exp 2 -->
+        <div class="reveal bg-[#111] border border-white/10 rounded-2xl p-8 card-hover">
+          <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
+            <div>
+              <h3 class="font-bold text-xl mb-1">Créateur de contenu – TikTok</h3>
+              <p class="text-orange-400 text-sm font-medium">Projet personnel · @letudiantchaufeurvtc</p>
+            </div>
+            <span class="mono text-gray-500 text-xs whitespace-nowrap bg-white/5 px-3 py-1.5 rounded-full">2024 – Présent</span>
+          </div>
+          <ul class="text-gray-400 text-sm space-y-2">
+            <li class="flex gap-2"><span class="text-orange-500 mt-1">▹</span> Production de contenu vidéo autour du quotidien étudiant & chauffeur VTC</li>
+            <li class="flex gap-2"><span class="text-orange-500 mt-1">▹</span> Stratégie de croissance d'audience et négociation de partenariats</li>
+            <li class="flex gap-2"><span class="text-orange-500 mt-1">▹</span> Montage vidéo, storytelling, gestion de communauté</li>
+          </ul>
+        </div>
+
+        <!-- Exp 3 -->
+        <div class="reveal bg-[#111] border border-white/10 rounded-2xl p-8 card-hover">
+          <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
+            <div>
+              <h3 class="font-bold text-xl mb-1">Développeur Web – Projet académique</h3>
+              <p class="text-orange-400 text-sm font-medium">UNIPRO · Formation en alternance</p>
+            </div>
+            <span class="mono text-gray-500 text-xs whitespace-nowrap bg-white/5 px-3 py-1.5 rounded-full">2024 – 2025</span>
+          </div>
+          <ul class="text-gray-400 text-sm space-y-2">
+            <li class="flex gap-2"><span class="text-orange-500 mt-1">▹</span> Conception et développement d'applications web full-stack</li>
+            <li class="flex gap-2"><span class="text-orange-500 mt-1">▹</span> Travail en équipe avec Git/GitHub et méthodologie agile</li>
+            <li class="flex gap-2"><span class="text-orange-500 mt-1">▹</span> Réalisation de StockGuard, une app de gestion de stock en React</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       COMPÉTENCES
+  ═══════════════════════════════════════════ -->
+  <section id="skills" class="py-24 px-6 bg-[#0d0d0d] relative z-10">
+    <div class="max-w-5xl mx-auto">
+
+      <div class="reveal text-center mb-16">
+        <p class="mono text-orange-400 text-sm tracking-widest mb-3">04. // Compétences</p>
+        <h2 class="text-4xl md:text-5xl font-extrabold">Mon <span class="accent">arsenal</span> technique</h2>
+      </div>
+
+      <div class="reveal grid md:grid-cols-2 gap-12">
+
+        <!-- Hard skills -->
+        <div>
+          <h3 class="font-semibold text-lg mb-6 text-gray-300">Technologies</h3>
+          <div class="space-y-5" id="skill-bars">
+            <div class="skill-item" data-level="85">
+              <div class="flex justify-between text-sm mb-2">
+                <span class="font-medium">HTML / CSS</span>
+                <span class="mono text-orange-400 text-xs">85%</span>
+              </div>
+              <div class="h-1 bg-white/10 rounded-full"><div class="skill-bar-fill" style="width:0%"></div></div>
+            </div>
+            <div class="skill-item" data-level="75">
+              <div class="flex justify-between text-sm mb-2">
+                <span class="font-medium">Tailwind CSS</span>
+                <span class="mono text-orange-400 text-xs">75%</span>
+              </div>
+              <div class="h-1 bg-white/10 rounded-full"><div class="skill-bar-fill" style="width:0%"></div></div>
+            </div>
+            <div class="skill-item" data-level="70">
+              <div class="flex justify-between text-sm mb-2">
+                <span class="font-medium">JavaScript</span>
+                <span class="mono text-orange-400 text-xs">70%</span>
+              </div>
+              <div class="h-1 bg-white/10 rounded-full"><div class="skill-bar-fill" style="width:0%"></div></div>
+            </div>
+            <div class="skill-item" data-level="65">
+              <div class="flex justify-between text-sm mb-2">
+                <span class="font-medium">React</span>
+                <span class="mono text-orange-400 text-xs">65%</span>
+              </div>
+              <div class="h-1 bg-white/10 rounded-full"><div class="skill-bar-fill" style="width:0%"></div></div>
+            </div>
+            <div class="skill-item" data-level="72">
+              <div class="flex justify-between text-sm mb-2">
+                <span class="font-medium">Python</span>
+                <span class="mono text-orange-400 text-xs">72%</span>
+              </div>
+              <div class="h-1 bg-white/10 rounded-full"><div class="skill-bar-fill" style="width:0%"></div></div>
+            </div>
+            <div class="skill-item" data-level="68">
+              <div class="flex justify-between text-sm mb-2">
+                <span class="font-medium">Java (POO)</span>
+                <span class="mono text-orange-400 text-xs">68%</span>
+              </div>
+              <div class="h-1 bg-white/10 rounded-full"><div class="skill-bar-fill" style="width:0%"></div></div>
+            </div>
+            <div class="skill-item" data-level="80">
+              <div class="flex justify-between text-sm mb-2">
+                <span class="font-medium">Git / GitHub</span>
+                <span class="mono text-orange-400 text-xs">80%</span>
+              </div>
+              <div class="h-1 bg-white/10 rounded-full"><div class="skill-bar-fill" style="width:0%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Soft skills + outils -->
+        <div class="space-y-8">
+          <div>
+            <h3 class="font-semibold text-lg mb-4 text-gray-300">Outils</h3>
+            <div class="flex flex-wrap gap-3">
+              <span class="bg-white/5 border border-white/10 px-4 py-2 rounded-full text-sm hover:border-orange-500/50 transition-colors">VS Code</span>
+              <span class="bg-white/5 border border-white/10 px-4 py-2 rounded-full text-sm hover:border-orange-500/50 transition-colors">Linux / Ubuntu</span>
+              <span class="bg-white/5 border border-white/10 px-4 py-2 rounded-full text-sm hover:border-orange-500/50 transition-colors">VMware</span>
+              <span class="bg-white/5 border border-white/10 px-4 py-2 rounded-full text-sm hover:border-orange-500/50 transition-colors">Figma</span>
+              <span class="bg-white/5 border border-white/10 px-4 py-2 rounded-full text-sm hover:border-orange-500/50 transition-colors">Adobe Illustrator</span>
+              <span class="bg-white/5 border border-white/10 px-4 py-2 rounded-full text-sm hover:border-orange-500/50 transition-colors">BlueStacks / ADB</span>
+              <span class="bg-white/5 border border-white/10 px-4 py-2 rounded-full text-sm hover:border-orange-500/50 transition-colors">Vercel / Netlify</span>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-lg mb-4 text-gray-300">Langues</h3>
+            <div class="space-y-3">
+              <div class="flex items-center gap-3">
+                <span class="text-xl">🇫🇷</span>
+                <span class="text-sm flex-1">Français</span>
+                <span class="mono text-orange-400 text-xs">Courant</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="text-xl">🇬🇧</span>
+                <span class="text-sm flex-1">Anglais</span>
+                <span class="mono text-gray-500 text-xs">Intermédiaire</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="text-xl">🇸🇳</span>
+                <span class="text-sm flex-1">Wolof</span>
+                <span class="mono text-orange-400 text-xs">Natif</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       PROJETS
+  ═══════════════════════════════════════════ -->
+  <section id="projects" class="py-24 px-6 relative z-10">
+    <div class="max-w-5xl mx-auto">
+
+      <div class="reveal text-center mb-16">
+        <p class="mono text-orange-400 text-sm tracking-widest mb-3">05. // Projets</p>
+        <h2 class="text-4xl md:text-5xl font-extrabold">Ce que j'ai <span class="accent">construit</span></h2>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-8">
+
+        <!-- Project 1 - StockGuard -->
+        <div class="reveal bg-[#111] border border-white/10 rounded-2xl overflow-hidden card-hover group">
+          <div class="h-48 bg-gradient-to-br from-orange-900/30 to-[#0d0d0d] flex items-center justify-center relative overflow-hidden">
+            <div class="absolute inset-0 opacity-10"
+              style="background-image: linear-gradient(#f97316 1px, transparent 1px), linear-gradient(90deg, #f97316 1px, transparent 1px); background-size: 30px 30px;"></div>
+            <div class="relative text-center">
+              <div class="text-5xl mb-2">📦</div>
+              <p class="mono text-orange-400 text-xs tracking-widest">StockGuard</p>
+            </div>
+          </div>
+          <div class="p-6">
+            <div class="flex items-start justify-between mb-3">
+              <h3 class="font-bold text-lg">StockGuard</h3>
+              <div class="flex gap-2">
+                <a href="#" class="text-gray-500 hover:text-white transition-colors text-sm">GitHub ↗</a>
+              </div>
+            </div>
+            <p class="text-gray-400 text-sm leading-relaxed mb-4">
+              Application web de gestion de stock développée en React, conçue pour le marché africain francophone.
+              Interface en FCFA, rapports journaliers, gestion des ventes et inventaires.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <span class="bg-orange-500/10 text-orange-400 text-xs px-3 py-1 rounded-full border border-orange-500/20">React</span>
+              <span class="bg-white/5 text-gray-400 text-xs px-3 py-1 rounded-full">JavaScript</span>
+              <span class="bg-white/5 text-gray-400 text-xs px-3 py-1 rounded-full">Tailwind CSS</span>
+              <span class="bg-white/5 text-gray-400 text-xs px-3 py-1 rounded-full">LocalStorage</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project 2 - Portfolio -->
+        <div class="reveal bg-[#111] border border-white/10 rounded-2xl overflow-hidden card-hover group">
+          <div class="h-48 bg-gradient-to-br from-blue-900/30 to-[#0d0d0d] flex items-center justify-center relative overflow-hidden">
+            <div class="absolute inset-0 opacity-10"
+              style="background-image: linear-gradient(#60a5fa 1px, transparent 1px), linear-gradient(90deg, #60a5fa 1px, transparent 1px); background-size: 30px 30px;"></div>
+            <div class="relative text-center">
+              <div class="text-5xl mb-2">🌐</div>
+              <p class="mono text-blue-400 text-xs tracking-widest">Portfolio</p>
+            </div>
+          </div>
+          <div class="p-6">
+            <div class="flex items-start justify-between mb-3">
+              <h3 class="font-bold text-lg">Portfolio Personnel</h3>
+              <div class="flex gap-2">
+                <a href="#" class="text-gray-500 hover:text-white transition-colors text-sm">Live ↗</a>
+              </div>
+            </div>
+            <p class="text-gray-400 text-sm leading-relaxed mb-4">
+              Ce portfolio ! Conçu en HTML + Tailwind CSS avec animations JavaScript.
+              Design responsive, dark theme, animations au scroll, menu mobile, et déploiement sur GitHub Pages.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <span class="bg-orange-500/10 text-orange-400 text-xs px-3 py-1 rounded-full border border-orange-500/20">HTML</span>
+              <span class="bg-white/5 text-gray-400 text-xs px-3 py-1 rounded-full">Tailwind CSS</span>
+              <span class="bg-white/5 text-gray-400 text-xs px-3 py-1 rounded-full">JavaScript</span>
+              <span class="bg-white/5 text-gray-400 text-xs px-3 py-1 rounded-full">GitHub Pages</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project 3 - Grade Manager -->
+        <div class="reveal bg-[#111] border border-white/10 rounded-2xl overflow-hidden card-hover group">
+          <div class="h-48 bg-gradient-to-br from-green-900/30 to-[#0d0d0d] flex items-center justify-center relative overflow-hidden">
+            <div class="absolute inset-0 opacity-10"
+              style="background-image: linear-gradient(#4ade80 1px, transparent 1px), linear-gradient(90deg, #4ade80 1px, transparent 1px); background-size: 30px 30px;"></div>
+            <div class="relative text-center">
+              <div class="text-5xl mb-2">📊</div>
+              <p class="mono text-green-400 text-xs tracking-widest">Grade Manager</p>
+            </div>
+          </div>
+          <div class="p-6">
+            <div class="flex items-start justify-between mb-3">
+              <h3 class="font-bold text-lg">Grade Manager</h3>
+              <div class="flex gap-2">
+                <a href="#" class="text-gray-500 hover:text-white transition-colors text-sm">GitHub ↗</a>
+              </div>
+            </div>
+            <p class="text-gray-400 text-sm leading-relaxed mb-4">
+              Script Python de gestion et statistiques des notes étudiantes. Calcul automatique de moyennes,
+              filtrage, validation des entrées et affichage des résultats.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <span class="bg-green-500/10 text-green-400 text-xs px-3 py-1 rounded-full border border-green-500/20">Python</span>
+              <span class="bg-white/5 text-gray-400 text-xs px-3 py-1 rounded-full">Algorithmique</span>
+              <span class="bg-white/5 text-gray-400 text-xs px-3 py-1 rounded-full">CLI</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project 4 - TikTok brand -->
+        <div class="reveal bg-[#111] border border-white/10 rounded-2xl overflow-hidden card-hover group">
+          <div class="h-48 bg-gradient-to-br from-pink-900/30 to-[#0d0d0d] flex items-center justify-center relative overflow-hidden">
+            <div class="absolute inset-0 opacity-10"
+              style="background-image: linear-gradient(#f472b6 1px, transparent 1px), linear-gradient(90deg, #f472b6 1px, transparent 1px); background-size: 30px 30px;"></div>
+            <div class="relative text-center">
+              <div class="text-5xl mb-2">🎬</div>
+              <p class="mono text-pink-400 text-xs tracking-widest">Content Creation</p>
+            </div>
+          </div>
+          <div class="p-6">
+            <div class="flex items-start justify-between mb-3">
+              <h3 class="font-bold text-lg">L'étudiant chauffeur VTC</h3>
+              <div class="flex gap-2">
+                <a href="#" class="text-gray-500 hover:text-white transition-colors text-sm">TikTok ↗</a>
+              </div>
+            </div>
+            <p class="text-gray-400 text-sm leading-relaxed mb-4">
+              Projet de création de contenu documentant la vie d'étudiant-entrepreneur au Sénégal.
+              Stratégie d'audience, partenariats locaux et storytelling authentique.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <span class="bg-pink-500/10 text-pink-400 text-xs px-3 py-1 rounded-full border border-pink-500/20">TikTok</span>
+              <span class="bg-white/5 text-gray-400 text-xs px-3 py-1 rounded-full">Montage vidéo</span>
+              <span class="bg-white/5 text-gray-400 text-xs px-3 py-1 rounded-full">Marketing</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       CONTACT
+  ═══════════════════════════════════════════ -->
+  <section id="contact" class="py-24 px-6 bg-[#0d0d0d] relative z-10">
+    <div class="max-w-2xl mx-auto text-center">
+
+      <div class="reveal">
+        <p class="mono text-orange-400 text-sm tracking-widest mb-3">06. // Contact</p>
+        <h2 class="text-4xl md:text-5xl font-extrabold mb-6">Travaillons <span class="accent">ensemble</span></h2>
+        <p class="text-gray-400 text-lg leading-relaxed mb-12">
+          Tu as un projet, une opportunité ou juste envie d'échanger ?
+          Mon inbox est toujours ouvert. Je réponds sous 24h.
+        </p>
+      </div>
+
+      <!-- Contact cards -->
+      <div class="reveal grid sm:grid-cols-3 gap-4 mb-10">
+        <a href="mailto:omar.diallo@email.com"
+           class="bg-[#151515] border border-white/10 rounded-2xl p-6 card-hover flex flex-col items-center gap-3 group">
+          <div class="w-12 h-12 accent-bg rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform">📧</div>
+          <span class="text-sm font-medium">Email</span>
+          <span class="mono text-gray-600 text-xs">omar@email.com</span>
+        </a>
+
+        <a href="https://github.com/omardiallo" target="_blank"
+           class="bg-[#151515] border border-white/10 rounded-2xl p-6 card-hover flex flex-col items-center gap-3 group">
+          <div class="w-12 h-12 bg-gray-800 rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform">🐙</div>
+          <span class="text-sm font-medium">GitHub</span>
+          <span class="mono text-gray-600 text-xs">@omardiallo</span>
+        </a>
+
+        <a href="https://linkedin.com/in/omardiallo" target="_blank"
+           class="bg-[#151515] border border-white/10 rounded-2xl p-6 card-hover flex flex-col items-center gap-3 group">
+          <div class="w-12 h-12 bg-blue-900 rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform">💼</div>
+          <span class="text-sm font-medium">LinkedIn</span>
+          <span class="mono text-gray-600 text-xs">Omar Diallo</span>
+        </a>
+      </div>
+
+      <div class="reveal">
+        <a href="mailto:omar.diallo@email.com"
+           class="inline-flex items-center gap-3 accent-bg text-white px-10 py-4 rounded-full font-bold text-sm tracking-wide hover:scale-105 transition-transform shadow-lg shadow-orange-500/25">
+          <span>Envoyer un message</span>
+          <span>→</span>
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       FOOTER
+  ═══════════════════════════════════════════ -->
+  <footer class="border-t border-white/10 py-12 px-6 relative z-10">
+    <div class="max-w-5xl mx-auto">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+
+        <!-- Logo -->
+        <a href="#hero" class="mono text-lg font-bold">
+          <span class="accent">&lt;</span>Omar<span class="accent">/&gt;</span>
+        </a>
+
+        <!-- Social links -->
+        <div class="flex items-center gap-6 text-gray-500">
+          <a href="https://github.com/omardiallo" target="_blank"
+             class="hover:text-white transition-colors text-sm underline-anim">GitHub</a>
+          <a href="https://linkedin.com/in/omardiallo" target="_blank"
+             class="hover:text-white transition-colors text-sm underline-anim">LinkedIn</a>
+          <a href="https://tiktok.com/@letudiantchaufeurvtc" target="_blank"
+             class="hover:text-white transition-colors text-sm underline-anim">TikTok</a>
+          <a href="mailto:omar.diallo@email.com"
+             class="hover:text-white transition-colors text-sm underline-anim">Email</a>
+        </div>
+
+        <!-- Copyright -->
+        <p class="mono text-gray-600 text-xs">
+          © 2025 Omar Diallo. Fait avec ❤️ & Tailwind
+        </p>
+
+      </div>
+    </div>
+  </footer>
+
+  <!-- ═══════════════════════════════════════════
+       JAVASCRIPT
+  ═══════════════════════════════════════════ -->
+  <script>
+    // ── Cursor glow ──
+    const glow = document.getElementById('glow');
+    document.addEventListener('mousemove', e => {
+      glow.style.left = e.clientX + 'px';
+      glow.style.top = e.clientY + 'px';
+    });
+
+    // ── Sticky header ──
+    const header = document.getElementById('header');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        header.classList.add('bg-[#0a0a0a]/90', 'backdrop-blur-md', 'border-b', 'border-white/5', 'shadow-2xl');
+      } else {
+        header.classList.remove('bg-[#0a0a0a]/90', 'backdrop-blur-md', 'border-b', 'border-white/5', 'shadow-2xl');
+      }
+    });
+
+    // ── Mobile burger ──
+    const burger = document.getElementById('burger');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const b1 = document.getElementById('b1');
+    const b2 = document.getElementById('b2');
+    const b3 = document.getElementById('b3');
+    let menuOpen = false;
+
+    burger.addEventListener('click', () => {
+      menuOpen = !menuOpen;
+      mobileMenu.classList.toggle('open', menuOpen);
+      b1.style.transform = menuOpen ? 'rotate(45deg) translate(5px, 5px)' : '';
+      b2.style.opacity = menuOpen ? '0' : '1';
+      b3.style.transform = menuOpen ? 'rotate(-45deg) translate(5px, -5px)' : '';
+    });
+
+    document.querySelectorAll('.mobile-link').forEach(link => {
+      link.addEventListener('click', () => {
+        menuOpen = false;
+        mobileMenu.classList.remove('open');
+        b1.style.transform = ''; b2.style.opacity = '1'; b3.style.transform = '';
+      });
+    });
+
+    // ── Scroll reveal ──
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+
+          // Trigger skill bars when skills section enters
+          if (entry.target.closest('#skills') || entry.target.id === 'skills') {
+            animateSkillBars();
+          }
+        }
+      });
+    }, { threshold: 0.1 });
+
+    reveals.forEach(el => observer.observe(el));
+
+    // ── Skill bars animation ──
+    let skillsAnimated = false;
+    function animateSkillBars() {
+      if (skillsAnimated) return;
+      skillsAnimated = true;
+      document.querySelectorAll('.skill-item').forEach((item, i) => {
+        const level = item.getAttribute('data-level');
+        const bar = item.querySelector('.skill-bar-fill');
+        setTimeout(() => {
+          bar.style.width = level + '%';
+        }, i * 100);
+      });
+    }
+
+    // Watch skills section specifically
+    const skillsSection = document.getElementById('skills');
+    const skillsObserver = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) animateSkillBars();
+    }, { threshold: 0.2 });
+    if (skillsSection) skillsObserver.observe(skillsSection);
+
+    // ── Active nav link on scroll ──
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('nav a[href^="#"]');
+
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        if (window.scrollY >= section.offsetTop - 120) current = section.getAttribute('id');
+      });
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + current) link.classList.add('active');
+      });
+    });
+  </script>
+
+</body>
+</html>
